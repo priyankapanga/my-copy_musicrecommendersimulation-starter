@@ -1,0 +1,11 @@
+Just describing a sample user profile
+
+user_profile = {
+    "favorite_genre": "rock",
+    "favorite_artist": "Voltline",      # optional small bonus
+    "favorite_mood": "intense",
+    "target_energy": 0.85,
+    "target_tempo_bpm": 145,
+    "target_acousticness": 0.15
+}
+
