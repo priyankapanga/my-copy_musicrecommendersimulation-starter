@@ -105,6 +105,36 @@ Examples:
 
 You will go deeper on this in your model card.
 
+Yes, a few likely biases are expected with this scoring setup:
+
+1. Genre lock-in bias  
+Genre gets a strong fixed bonus, so songs outside the user’s usual genre may rarely surface even if they match mood/energy well.
+
+2. Exact-match categorical bias  
+Mood and genre use exact matching, which can punish near-equivalent labels (for example relaxed vs chill).
+
+3. Target-proximity bias on numeric features  
+Songs close to target energy/tempo/valence win consistently, which can reduce variety and discovery.
+
+4. Scale-range bias  
+If numeric features are not normalized consistently, one feature may dominate scoring unintentionally.
+
+5. Dataset representation bias  
+If the CSV has more songs from certain genres/moods, those groups are more likely to appear in Top K.
+
+6. Popularity/recency tie-breaker bias  
+If used, these can favor already popular or recently played tracks and suppress long-tail songs.
+
+7. Cold-start bias  
+New users with sparse preferences or new songs with limited metadata can be scored unfairly low.
+
+Simple mitigations:
+1. Add a small exploration boost for diverse genres or underrepresented items.
+2. Use soft categorical similarity instead of strict exact match.
+3. Cap dominance of any one feature and periodically tune weights.
+4. Audit Top K distribution by genre/mood to detect skew.
+5. Add a diversity reranking step after scoring.
+
 ---
 
 ## Reflection

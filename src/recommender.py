@@ -1,3 +1,4 @@
+import csv
 from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass
 
@@ -50,24 +51,116 @@ def load_songs(csv_path: str) -> List[Dict]:
     Loads songs from a CSV file.
     Required by src/main.py
     """
-    # TODO: Implement CSV loading logic
-    print(f"Loading songs from {csv_path}...")
-    return []
+    songs: List[Dict] = []
+
+    with open(csv_path, newline="", encoding="utf-8") as csv_file:
+        reader = csv.DictReader(csv_file)
+
+        for row in reader:
+            song: Dict = {}
+            for key, value in row.items():
+                if value is None:
+                    song[key] = value
+                    continue
+
+                value = value.strip()
+                if key == "id":
+                    song[key] = int(value)
+                elif key in {
+                    "energy",
+                    "tempo_bpm",
+                    "valence",
+                    "danceability",
+                    "acousticness",
+                }:
+                    song[key] = float(value)
+                else:
+                    song[key] = value
+
+            songs.append(song)
+
+    return songs
 
 def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
     """
     Scores a single song against user preferences.
     Required by recommend_songs() and src/main.py
     """
-    # TODO: Implement scoring logic using your Algorithm Recipe from Phase 2.
-    # Expected return format: (score, reasons)
-    return []
+    reasons: List[str] = []
+    score = 0.0
+
+    preferred_genre = user_prefs.get("genre") or user_prefs.get("favorite_genre")
+    preferred_mood = user_prefs.get("mood") or user_prefs.get("favorite_mood")
+    target_energy = user_prefs.get("targetEnergy", user_prefs.get("energy", user_prefs.get("target_energy", 0.0)))
+    target_tempo = user_prefs.get("targetTempo", user_prefs.get("tempo_bpm", user_prefs.get("target_tempo")))
+    target_valence = user_prefs.get("targetValence", user_prefs.get("valence", user_prefs.get("target_valence")))
+    target_danceability = user_prefs.get(
+        "targetDanceability",
+        user_prefs.get("danceability", user_prefs.get("target_danceability")),
+    )
+    target_acousticness = user_prefs.get(
+        "targetAcousticness",
+        user_prefs.get("acousticness", user_prefs.get("target_acousticness")),
+    )
+    preferred_artist = user_prefs.get("artist") or user_prefs.get("preferred_artist")
+
+    genre = str(song.get("genre", "")).strip().lower()
+    mood = str(song.get("mood", "")).strip().lower()
+
+    if preferred_genre and genre == str(preferred_genre).strip().lower():
+        score += 2.0
+        reasons.append("genre match (+2)")
+
+    if preferred_mood and mood == str(preferred_mood).strip().lower():
+        score += 1.0
+        reasons.append("mood match (+1)")
+
+    if preferred_artist and str(song.get("artist", "")).strip().lower() == str(preferred_artist).strip().lower():
+        score += 0.5
+        reasons.append("artist match (+0.5)")
+
+    energy = float(song.get("energy", 0.0))
+    energy_score = 3.0 * (1.0 - min(abs(energy - float(target_energy)), 1.0))
+    score += energy_score
+    reasons.append(f"energy closeness (+{energy_score:.2f})")
+
+    if target_tempo is not None:
+        tempo = float(song.get("tempo_bpm", 0.0))
+        tempo_score = 1.5 * (1.0 - min(abs(tempo - float(target_tempo)) / 80.0, 1.0))
+        score += tempo_score
+        reasons.append(f"tempo closeness (+{tempo_score:.2f})")
+
+    if target_valence is not None:
+        valence = float(song.get("valence", 0.0))
+        valence_score = 1.0 * (1.0 - min(abs(valence - float(target_valence)), 1.0))
+        score += valence_score
+        reasons.append(f"valence closeness (+{valence_score:.2f})")
+
+    if target_danceability is not None:
+        danceability = float(song.get("danceability", 0.0))
+        danceability_score = 1.0 * (1.0 - min(abs(danceability - float(target_danceability)), 1.0))
+        score += danceability_score
+        reasons.append(f"danceability closeness (+{danceability_score:.2f})")
+
+    if target_acousticness is not None:
+        acousticness = float(song.get("acousticness", 0.0))
+        acousticness_score = 1.0 * (1.0 - min(abs(acousticness - float(target_acousticness)), 1.0))
+        score += acousticness_score
+        reasons.append(f"acousticness closeness (+{acousticness_score:.2f})")
+
+    return score, reasons
 
 def recommend_songs(user_prefs: Dict, songs: List[Dict], k: int = 5) -> List[Tuple[Dict, float, str]]:
     """
     Functional implementation of the recommendation logic.
     Required by src/main.py
     """
-    # TODO: Implement scoring and ranking logic
-    # Expected return format: (song_dict, score, explanation)
-    return []
+    scored_songs: List[Tuple[Dict, float, str]] = []
+
+    for song in songs:
+        score, reasons = score_song(user_prefs, song)
+        explanation = ", ".join(reasons) if reasons else "no matching preference signals"
+        scored_songs.append((song, score, explanation))
+
+    scored_songs.sort(key=lambda item: item[1], reverse=True)
+    return scored_songs[:k]
