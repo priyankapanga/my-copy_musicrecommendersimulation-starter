@@ -155,12 +155,14 @@ def recommend_songs(user_prefs: Dict, songs: List[Dict], k: int = 5) -> List[Tup
     Functional implementation of the recommendation logic.
     Required by src/main.py
     """
-    scored_songs: List[Tuple[Dict, float, str]] = []
+    scored_songs = [
+        (
+            song,
+            score,
+            ", ".join(reasons) if reasons else "no matching preference signals",
+        )
+        for song in songs
+        for score, reasons in [score_song(user_prefs, song)]
+    ]
 
-    for song in songs:
-        score, reasons = score_song(user_prefs, song)
-        explanation = ", ".join(reasons) if reasons else "no matching preference signals"
-        scored_songs.append((song, score, explanation))
-
-    scored_songs.sort(key=lambda item: item[1], reverse=True)
-    return scored_songs[:k]
+    return sorted(scored_songs, key=lambda item: item[1], reverse=True)[:k]
