@@ -11,7 +11,7 @@ Your goal is to:
 - Evaluate what your system gets right and wrong
 - Reflect on how this mirrors real world AI recommenders
 
-This version of the project builds a transparent, content-based music recommender that scores each song against a user taste profile and returns the top matches. The model prioritizes exact matches on genre and mood, then refines ranking with numeric feature closeness (especially energy) so recommendations reflect both musical category and listening vibe.
+This version of the project, Magic Jukebox, builds a content-based music recommender that scores each song against a user taste profile and returns the top matches. The model prioritizes matches on genre and mood, then refines weight and ranking with numeric feature closeness (especially energy) so recommendations reflect both musical category and listening vibe.
 
 ---
 
@@ -30,19 +30,19 @@ Some prompts to answer:
 Answers:
 
 - What features does each `Song` use in your system
-  - Each song uses `genre`, `mood`, `energy`, `tempo_bpm`, `valence`, `danceability`, and `acousticness`, plus identity fields like `title` and `artist`.
+  - Each song uses `genre`, `mood`, `energy`, `tempo_bpm`, `valence`, `danceability`, and `acousticness`, as well as identity fields like `title` and `artist`.
 - What information does your `UserProfile` store
   - The user profile stores `favorite_genre`, `favorite_mood`, a numeric `target_energy`, and `likes_acoustic` (a boolean preference).
 
-  This is because Copilot suggested the acoustic feature, which I think can help understand if the user likes more stripped-back songs, and that preference oculd be important for recommending more songs. 
+  This is because Copilot suggested the acoustic feature, which I think can help understand if the user likes more stripped-back songs, and that preference oculd be important for recommending more songs.
 
 - How does your `Recommender` compute a score for each song
-  - The scores are weighted. Genre and mood are the highest, but genre is a little higher because mood could change accross days or even listening sessions. Genres and mood can be matched, but the numeric features like energy will be based on how close they are to the user's preference. The second step scoring would be a weighted sum of the features, and then a ranking from highest to lowest for the recommendation system.  
-  
+  - The scores are weighted. Genre and mood are the highest, but genre is a little higher because mood could change accross days or even listening sessions. Genres and mood can be matched, but the numeric features like energy will be based on how close they are to the user's preference. The second step scoring would be a weighted sum of the features, and then a ranking from highest to lowest for the recommendation system.
+
 - How do you choose which songs to recommend?You can include a simple diagram or bullet list if helpful.
-  - The system scores every song, sorts songs by score from highest to lowest, and returns the top songs as recommendations. I think this could depend on how many songs we want. 
+  - The system scores every song, sorts songs by score from highest to lowest, and returns the top songs as recommendations. I think this could depend on how many songs we want, like the top k songs. Here is a mermaid flowchart created using code from copilot:
 
-
+  ![Flowchart showing process from csv to recommendations](Flowchart.png)
 
 ---
 
@@ -87,9 +87,7 @@ You can add more tests in `tests/test_recommender.py`.
 
 Use this section to document the experiments you ran. For example:
 
-- What happened when you changed the weight on genre from 2.0 to 0.5
-- What happened when you added tempo or valence to the score
-- How did your system behave for different types of users
+I changed the weights. I doubed the importance of energy and the importance of genre. I noticed the scored lists stayed mostly the same at the top, but the weights changed. #1-#3 rankings stayed the same, while the bottom ones shifted. More details about the change in outputs are in the evaluation section of the model card!
 
 ---
 
@@ -105,35 +103,7 @@ Examples:
 
 You will go deeper on this in your model card.
 
-Yes, a few likely biases are expected with this scoring setup:
-
-1. Genre lock-in bias  
-Genre gets a strong fixed bonus, so songs outside the user’s usual genre may rarely surface even if they match mood/energy well.
-
-2. Exact-match categorical bias  
-Mood and genre use exact matching, which can punish near-equivalent labels (for example relaxed vs chill).
-
-3. Target-proximity bias on numeric features  
-Songs close to target energy/tempo/valence win consistently, which can reduce variety and discovery.
-
-4. Scale-range bias  
-If numeric features are not normalized consistently, one feature may dominate scoring unintentionally.
-
-5. Dataset representation bias  
-If the CSV has more songs from certain genres/moods, those groups are more likely to appear in Top K.
-
-6. Popularity/recency tie-breaker bias  
-If used, these can favor already popular or recently played tracks and suppress long-tail songs.
-
-7. Cold-start bias  
-New users with sparse preferences or new songs with limited metadata can be scored unfairly low.
-
-Simple mitigations:
-1. Add a small exploration boost for diverse genres or underrepresented items.
-2. Use soft categorical similarity instead of strict exact match.
-3. Cap dominance of any one feature and periodically tune weights.
-4. Audit Top K distribution by genre/mood to detect skew.
-5. Add a diversity reranking step after scoring.
+It could match genre too closely, and could benefit from a softer related-terms matching. I also noticed some songs repeatedly showing up in #1-#5 recommendations, but this might be because of the size and the variety in the datasets. The dataset could have more data points, and the model could deal with more complex user profiles.
 
 ---
 
