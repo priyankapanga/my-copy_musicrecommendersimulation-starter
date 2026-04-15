@@ -70,6 +70,8 @@ Prompts:
 - Cases where the system overfits to one preference  
 - Ways the scoring might unintentionally favor some users  
 
+One weakness I observed during experiments is filter-bubble behavior: once a profile matches a specific style, the top results keep returning very similar songs, so discovery drops and recommendations feel repetitive. This happens because the system always picks the highest raw scores and does not add a diversity step.
+
 ---
 
 ## 7. Evaluation  
@@ -84,6 +86,11 @@ Prompts:
 - Any simple tests or comparisons you ran  
 
 No need for numeric metrics unless you created some.
+
+Describe which user profiles you tested and what surprised you about the results.
+
+
+For each pair of profiles, write at least one comment in your reflection.md file comparing the differences between their outputs — what changed, and why does it make sense? For example: "EDM profile prefers high energy songs; acoustic profile shifts toward low energy guitars." This helps demonstrate that you understand what your user preferences are actually testing for and whether the output is valid.
 
 ---
 
