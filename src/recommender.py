@@ -111,8 +111,8 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
     mood = str(song.get("mood", "")).strip().lower()
 
     if preferred_genre and genre == str(preferred_genre).strip().lower():
-        score += 2.0
-        reasons.append("genre match (+2)")
+        score += 1.0
+        reasons.append("genre match (+1)")
 
     if preferred_mood and mood == str(preferred_mood).strip().lower():
         score += 1.0
@@ -123,7 +123,7 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
         reasons.append("artist match (+0.5)")
 
     energy = float(song.get("energy", 0.0))
-    energy_score = 3.0 * (1.0 - min(abs(energy - float(target_energy)), 1.0))
+    energy_score = 6.0 * (1.0 - min(abs(energy - float(target_energy)), 1.0))
     score += energy_score
     reasons.append(f"energy closeness (+{energy_score:.2f})")
 

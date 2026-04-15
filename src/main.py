@@ -17,17 +17,28 @@ def main() -> None:
     print(f"Loaded {len(songs)} songs from data/songs.csv")
 
     # Starter example profile
-    user_prefs = {"genre": "pop", "mood": "happy", "energy": 0.8}
+    #user_prefs = {"genre": "pop", "mood": "happy", "energy": 0.8}
 
-    recommendations = recommend_songs(user_prefs, songs, k=5)
+    # Phase 4: stress test. Three distinct user preferences
+    user_prefs_1 = {"genre": "pop", "mood": "exciting", "energy": 0.9}
+    user_prefs_2 = {"genre": "lofi", "mood": "chill", "energy": 0.51}
+    user_prefs_3 = {"genre": "rock", "mood": "intense", "energy": 0.95}
+    # Adversarial: conflicting vibe (high energy + sad mood)
+    user_prefs_4 = {"genre": "pop", "mood": "sad", "energy": 0.98}
+    # Adversarial: out-of-range numeric values
+    user_prefs_5 = {"genre": "pop", "mood": "happy", "energy": 2.5, "targetValence": -0.4}
 
-    print("\nTop recommendations:")
-    print("-" * 60)
-    for index, rec in enumerate(recommendations, start=1):
-        song, score, explanation = rec
-        print(f"{index}. {song['title']}")
-        print(f"   Score : {score:.2f}")
-        print(f"   Reasons: {explanation}")
+    # Test all user preferences
+    for i, prefs in enumerate([user_prefs_1, user_prefs_2, user_prefs_3, user_prefs_4, user_prefs_5], start=1):
+        print(f"\nUser Profile {i}:")
+        recommendations = recommend_songs(prefs, songs, k=5)
+        print("\nTop recommendations:")
+        print("-" * 60)
+        for index, rec in enumerate(recommendations, start=1):
+            song, score, explanation = rec
+            print(f"{index}. {song['title']}")
+            print(f"   Score : {score:.2f}")
+            print(f"   Reasons: {explanation}")
         print("-" * 60)
 
 
