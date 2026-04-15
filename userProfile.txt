@@ -1,4 +1,4 @@
-Just describing a sample user profile
+Planning space, Just describing a sample user profile
 
 user_profile = {
     "favorite_genre": "rock",
