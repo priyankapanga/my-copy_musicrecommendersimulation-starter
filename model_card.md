@@ -110,17 +110,26 @@ The test was doubling the importance of energy and half the importance of genre.
 There are total 5 users. 
 Below are the comparison for users 1-3
 ![user1,2,3 recommendations before the change](1_to_3_before.png)
+
+After change:
+
 ![user 1, 2, 3 recommendations after change](1_to_3_after.png)
 
 User1: The songs chosen remained the same, but the score for the top songs increased in the change. This user wanted exciting high-energy pop songs, and this matches well with the songs chosen. The top song, Gym hero's score increased, because the high energy of the song was already high to begin with so it matched the desired energy, and because of the increased weight, the score increased. 
+
 User2: This user liked chill lofi music mid-energy. The rankings for #4-#5 song changed. "Dusty Polaroid" climbed up one spot because of a higher weight for enrgy match, which added more points. 
+
 User3: Likes intense high-energy rock. Rankings stayed same, but score increased because of weight change. 
 
 Below are the comparison for users 4-5
 ![user 4,5 recommendations before the change](4_to_5_before.png)
+
+After change: 
+
 ![user 4,5 recommendations after change](4_to_5_after.png)
 
 User4: Likes high energy sad-pop. The matchup between energy and mood and genre was interesting in this user profile. The rankings stayed the same, score increased. The model picked Gym Hero, intense high energy pop as the top song. 
+
 User5: Out of bounds example: Happy pop, with energy 2.5 and valence below zero, which kind of condradict each other as well. Rankings were the exact same, but this time the score actually decreased. Perhaps the top matches Sunrise City, Gym Hero, and Rooftop Lights were impacted more by the others. However, the score also isn't as high as the recommendations for the previous users. This could be somewhere the app could improve in the future. 
 
 
